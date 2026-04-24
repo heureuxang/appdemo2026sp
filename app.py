@@ -32,10 +32,11 @@ if st.button("Submit"):
     # Display entered values
     st.write(f"The sales target entered: {sales}")
     st.write(f"The selected region: {option}")
+    st.success("Dashboard completed successfully!")
 
     # Success message
 
-st.success("Dashboard completed successfully!")
+
 
     # Extra message for ambitious target
 if sales>10000:
