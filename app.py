@@ -35,7 +35,9 @@ if st.button("Submit"):
 
     # Success message
 
-st.success("Operation completed successfully!")
+st.success("Dashboard completed successfully!")
 
     # Extra message for ambitious target
+if sales>10000:
+  st.write("Great! You have set an ambitious target.")
 
