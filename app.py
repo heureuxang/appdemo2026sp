@@ -1,46 +1,66 @@
 import streamlit as st
+import pandas as pd
+import matplotlib.pyplot as plt
+import numpy as np
 
-# Title
-st.title("Basic Web Calculator")
+# -------------------------------
+# Title and Description
+# -------------------------------
+st.title("📊 Business Sales Dashboard")
+st.write("Analyze monthly sales data interactively!")
 
-# Input fields
-num1 = st.number_input("Enter first number", value=0.0)
-num2 = st.number_input("Enter second number", value=0.0)
+# -------------------------------
+# Sample Data
+# -------------------------------
+months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+          "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+sales = np.random.randint(5000, 20000, size=12)
+expenses = np.random.randint(3000, 15000, size=12)
 
-# Operation selection
-operation = st.selectbox("Choose operation", ["Add", "Subtract", "Multiply", "Divide"])
+data = pd.DataFrame({
+    "Month": months,
+    "Sales": sales,
+    "Expenses": expenses
+})
 
-# Calculate
-if st.button("Calculate"):
-    if operation == "Add":
-        result = num1 + num2
-    elif operation == "Subtract":
-        result = num1 - num2
-    elif operation == "Multiply":
-        result = num1 * num2
-    elif operation == "Divide":
-        result = num1 / num2 if num2 != 0 else "Error: Division by zero"
+# -------------------------------
+# Sidebar Filters
+# -------------------------------
+st.sidebar.header("Filters")
+selected_months = st.sidebar.multiselect("Select Months", months,
+                                         default=months)
+show_expenses = st.sidebar.checkbox("Show Expenses", value=True)
 
-    st.success(f"Result: {result:,.3f}")
+# Filter data
+filtered_data = data[data["Month"].isin(selected_months)]
 
-import math
+# -------------------------------
+# Display Data Table
+# -------------------------------
+st.subheader("Filtered Data")
+st.dataframe(filtered_data)
 
-st.header("Scientific Functions")
-operation_sci = st.selectbox("Choose scientific operation", ["Square Root", "Power", "Sin", "Cos", "Tan"])
+# -------------------------------
+# Interactive Chart
+# -------------------------------
+st.subheader("Sales Chart")
+fig, ax = plt.subplots()
+ax.plot(filtered_data["Month"], filtered_data["Sales"],
+        marker='o', label="Sales")
+if show_expenses:
+    ax.plot(filtered_data["Month"], filtered_data["Expenses"],
+            marker='o', label="Expenses")
+ax.set_title("Monthly Performance")
+ax.set_xlabel("Month")
+ax.set_ylabel("Amount ($)")
+ax.legend()
+st.pyplot(fig)
 
-value = st.number_input("Enter value", value=0.0)
-power = st.number_input("Enter power (if applicable)", value=2.0)
-
-if st.button("Calculate Scientific"):
-    if operation_sci == "Square Root":
-        result = math.sqrt(value)
-    elif operation_sci == "Power":
-        result = math.pow(value, power)
-    elif operation_sci == "Sin":
-        result = math.sin(math.radians(value))
-    elif operation_sci == "Cos":
-        result = math.cos(math.radians(value))
-    elif operation_sci == "Tan":
-        result = math.tan(math.radians(value))
-
-    st.success(f"Result: {result:,.3f}")
+# -------------------------------
+# KPI Metrics
+# -------------------------------
+st.subheader("Key Metrics")
+col1, col2, col3 = st.columns(3)
+col1.metric("Total Sales", f"${filtered_data['Sales'].sum():,.0f}")
+col2.metric("Total Expenses", f"${filtered_data['Expenses'].sum():,.0f}")
+col3.metric("Profit", f"${(filtered_data['Sales'].sum() - filtered_data['Expenses'].sum()):,.0f}")
